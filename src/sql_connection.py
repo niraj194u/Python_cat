@@ -5,7 +5,7 @@ connection = mysql.connector.connect(
     host="localhost",          # Host (e.g., 'localhost')
     user="root",      # Your MySQL username
     password="niraj24",  # Your MySQL password
-    database="trial"   # Your database name
+    database="bd"   # Your database name
 )
 
 # Create a cursor object using the connection

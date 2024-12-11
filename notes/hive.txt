@@ -1,0 +1,119 @@
+HIVE
+-----------------------------------------------------------------
+login to EC2 machine >> hive >> run SQL syntax
+-------------------------------------------------------------------
+CREATE TABLE managed_table_insert_only (
+  id INT,
+  name STRING,
+  salary DOUBLE
+)
+STORED AS ORC
+TBLPROPERTIES ('transactional'='true', 'insert.only'='true');
+
+INSERT INTO managed_table_crud VALUES (1, 'John', 5000.0);
+INSERT INTO managed_table_crud VALUES (2, 'Jane', 6000.0);
+
+SELECT * FROM managed_table_crud;
+
+UPDATE managed_table_crud SET salary = 5500.0 WHERE id = 1;
+
+DELETE FROM managed_table_crud WHERE id = 2;
+
+------------------------------------------------------
+Managed Table: CRUD Transactional (ORC format)
+This table allows CRUD operations and uses the ORC file format for storage.
+
+Create Table:
+
+CREATE TABLE managed_table_crud (
+  id INT,
+  name STRING,
+  salary DOUBLE
+)
+STORED AS ORC
+TBLPROPERTIES ('transactional'='true');
+
+INSERT INTO managed_table_crud VALUES (1, 'John', 5000.0);
+INSERT INTO managed_table_crud VALUES (2, 'Jane', 6000.0);
+
+-------------------------------------------------------------------
+Managed Table: Insert-only Transactional
+This table only supports insert operations and can use any file format.
+
+Create Table:
+
+CREATE TABLE managed_table_insert_only (
+  id INT,
+  name STRING,
+  salary DOUBLE
+)
+STORED AS ORC
+TBLPROPERTIES ('transactional'='true', 'insert.only'='true',);
+
+
+INSERT INTO managed_table_insert_only VALUES (1, 'John', 5000.0);
+INSERT INTO managed_table_insert_only VALUES (2, 'Jane', 6000.0);
+
+SELECT * FROM managed_table_insert_only;
+------------------------------------------------------------------------
+
+Temporary Table:
+Temporary tables do not persist data across sessions. They cannot be used for transactions or updates.
+
+Create Table:
+
+CREATE TEMPORARY TABLE temp_table (
+  id INT,
+  name STRING,
+  salary DOUBLE
+)
+STORED AS TEXTFILE;
+
+INSERT INTO temp_table VALUES (1, 'John', 5000.0);
+INSERT INTO temp_table VALUES (2, 'Jane', 6000.0);
+
+
+SELECT * FROM temp_table;
+
+
+SELECT * FROM managed_table_crud;
+
+UPDATE managed_table_crud SET salary = 5500.0 WHERE id = 1;
+
+DELETE FROM managed_table_crud WHERE id = 2;
+---------------------------------------------------------------------------------------
+-----------------------------------------------------------
+CREATE EXTERNAL TABLE Obinna.test_table (
+  id INT,
+  name STRING,
+  category STRING,
+  Amount DOUBLE
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','  
+LINES TERMINATED BY '\n'  
+STORED AS TEXTFILE
+LOCATION '/tmp/bigdata_nov_2024/obinna/data/'
+TBLPROPERTIES ("skip.header.line.count"="1");
+-------------------------------------------------------------------------------------
+show create table test_table;
+------------------------------------------------------------------------------------
+
+HIVE SUMMARY
+Hive is a data warehouse developed by facebook.
+Hive use HDFS storage (creates grid or schema on top of HDFS)
+down the line it uses mapreduce and optional it has Spark and Hive on Tez.
+Hive is fault-tolerant
+Hive has:
+	-Hive server: where your qery runs.
+	-Metastore: which house metada, schema and tables.
+	-Tables:
+		-Managed/Internal table
+			-Managed curd: Has ACID properties
+			-Managed Insert Only and 
+			-Temporary Table.
+		-External Table: 
+-When you delete external tables, schema only will be deleted, but table will not be deleted
+-When you delete Managed/internal tables both schema and table will be deleted
+-External table most suitable for batch processing.
+-Internal table is for transactional operations/queries in hadoop
